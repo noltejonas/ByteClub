@@ -23,13 +23,22 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Flutter App')),
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.trending_up), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.business), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: ''),
+        items: <BottomNavigationBarItem>[
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.trending_up),
+            label: '',
+          ),
+          BottomNavigationBarItem(
+            icon: Image.asset(
+              'lib/images/icon.png',
+              width: 24, // Set the width to fit the icon size
+              height: 24, // Set the height to fit the icon size
+            ),
+            label: '',
+          ),
+          const BottomNavigationBarItem(icon: Icon(Icons.person), label: ''),
         ],
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
@@ -38,7 +47,11 @@ class _HomeScreenState extends State<HomeScreen> {
         onPressed: () {
           _onItemTapped(1);
         },
-        child: Icon(Icons.business),
+        child: Image.asset(
+          'lib/images/icon.png',
+          width: 60, // Set the width to fit the icon size
+          height: 60, // Set the height to fit the icon size
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
