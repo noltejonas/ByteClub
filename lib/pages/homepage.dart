@@ -1,10 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:flutter_cube/flutter_cube.dart';
 import 'detail_screen.dart';
 import 'package:byteclub/gpt_service.dart';
-import 'dart:math' as math;
 
 class Page2 extends StatefulWidget {
   @override
@@ -23,10 +21,11 @@ class _Page2State extends State<Page2> {
     {"role": "system", "content": "You are a helpful assistant."}
   ];
 
+  // Now we only show user messages, not the GPT reply
   final List<Map<String, String>> _messages = [];
-
   bool _isLoading = false;
-  Map<String, dynamic> _data = {}; // Define the _data variable
+  Map<String, dynamic> _data = {};
+  List<String> _impactedParts = [];
 
   @override
   void initState() {
@@ -35,32 +34,67 @@ class _Page2State extends State<Page2> {
   }
 
   Future<void> _loadData() async {
-    final String response = await rootBundle.loadString('lib/constants/data.json');
+    final String response =
+        await rootBundle.loadString('lib/constants/data.json');
     final data = await json.decode(response);
     setState(() {
       _data = data['StGallenModel'];
     });
   }
 
+  void _resetImpactedParts() {
+    setState(() {
+      _impactedParts = [];
+    });
+  }
+
+  // Propagate impact upward: if a child is impacted, add its parent recursively.
+  bool _propagate(String key, Map<String, dynamic> node, Set<String> impacted) {
+    final String name = node['name'] ?? key;
+    bool anyChildImpacted = false;
+    if (node.containsKey('children') && node['children'] is Map<String, dynamic>) {
+      Map<String, dynamic> children = node['children'];
+      for (var entry in children.entries) {
+        bool childResult = _propagate(entry.key, entry.value, impacted);
+        if (childResult) {
+          anyChildImpacted = true;
+        }
+      }
+    }
+    if (impacted.contains(name) || anyChildImpacted) {
+      impacted.add(name);
+      return true;
+    }
+    return false;
+  }
+
   Future<void> _sendMessage() async {
     final text = _controller.text.trim();
     if (text.isEmpty) return;
-
     setState(() {
       _messages.add({"role": "user", "content": text});
       _isLoading = true;
+      _resetImpactedParts();
     });
     _controller.clear();
 
     try {
-      final reply = await gptService.sendMessage(text, _conversation, {"key": "value"});
+      final reply = await gptService.sendMessage(
+          text, _conversation, {"key": "value"});
+      // We use the reply solely to update impacted parts.
       setState(() {
-        _messages.add({"role": "assistant", "content": reply});
+        // Assume reply is a comma-separated list of impacted part names.
+        _impactedParts =
+            reply.split(',').map((part) => part.trim()).toList();
+        // Propagate change: if a child is impacted, also mark its parent.
+        Set<String> impactedSet = Set<String>.from(_impactedParts);
+        _data.forEach((key, node) {
+          _propagate(key, node, impactedSet);
+        });
+        _impactedParts = impactedSet.toList();
       });
     } catch (e) {
-      setState(() {
-        _messages.add({"role": "assistant", "content": "Error: ${e.toString()}"});
-      });
+      // Optionally log the error in background.
     } finally {
       setState(() {
         _isLoading = false;
@@ -69,89 +103,127 @@ class _Page2State extends State<Page2> {
   }
 
   Widget _buildMessage(Map<String, String> message) {
-    final isUser = message["role"] == "user";
+    // Now only user messages are shown.
     return Container(
       padding: EdgeInsets.all(8),
       margin: EdgeInsets.symmetric(vertical: 4, horizontal: 10),
-      alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
+      alignment: Alignment.centerRight,
       child: Container(
         decoration: BoxDecoration(
-          color: isUser ? Colors.blueAccent : Colors.grey[300],
+          color: Colors.blueAccent,
           borderRadius: BorderRadius.circular(12),
         ),
         padding: EdgeInsets.all(12),
         child: Text(
           message["content"] ?? "",
-          style: TextStyle(color: isUser ? Colors.white : Colors.black),
+          style: TextStyle(color: Colors.white),
         ),
       ),
     );
   }
 
-  Widget _buildCard(String title, Map<String, dynamic> content) {
+  Widget _buildCard(String key, Map<String, dynamic> content) {
+    // Fallback to key if content['name'] is null
+    final String name = content['name'] ?? key;
+    bool isImpacted = _impactedParts.contains(name);
+    
+    // Special case for Unternehmen card with 3D simulation
+    if (key == "Unternehmen") {
+      return Card(
+        color: isImpacted ? Colors.green[100] : null,
+        child: InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => DetailScreen(
+                  parentCategory: name,
+                  details: content['children'] ?? {},
+                  impactedParts: _impactedParts,
+                ),
+              ),
+            );
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                Text(
+                  name,
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 12),
+                Container(
+                  height: 200,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Center(
+                    child: _buildCompanySimulation(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+    
+    // Regular cards for other categories
     return Card(
+      color: isImpacted ? Colors.green[100] : null,
       child: InkWell(
         onTap: () {
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => DetailScreen(
-                parentCategory: title,
-                details: content,
+                parentCategory: name,
+                details: content['children'] ?? {},
+                impactedParts: _impactedParts,
               ),
             ),
           );
         },
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title, style: TextStyle(fontSize: 18)),
-              if (title == "Unternehmen")
-                Padding(
-                  padding: const EdgeInsets.only(top: 16.0),
-                  child: Container(
-                    height: 300, // Set a fixed height for the Cube widget
-                    child: Cube(
-                      onSceneCreated: (Scene scene) {
-                         Object object = Object(fileName: 'lib/models/building.obj');
-                        object.position.setValues(0, 0, 0);
-                        object.scale.setValues(0.1, 0.1, 0.1); // Adjust the scale if necessary
-                        scene.world.add(object);
-                        scene.camera.zoom = 10;
-                        scene.camera.position.setValues(0, 0, 10); // Adjust the camera position
-                   // Center the camera target on the object
-
-                        // Custom interaction handling
-                        double initialX = 0;
-                        double initialY = 0;
-                        double rotationX = 0;
-                        double rotationY = 0;
-                        /*
-                        scene.onUpdate = () {
-                          // Limit rotation to 5 degrees in each direction
-                          rotationX = rotationX.clamp(-math.pi / 36, math.pi / 36);
-                          rotationY = rotationY.clamp(-math.pi / 36, math.pi / 36);
-
-                          object.rotation.setValues(rotationX, rotationY, 0);
-                        };
-
-                        scene.onPointerMove = (details) {
-                          if (details.delta.dx != 0 || details.delta.dy != 0) {
-                            rotationX += details.delta.dy * 0.01;
-                            rotationY += details.delta.dx * 0.01;
-                          }
-                        };*/
-                      },
-                      interactive: true, // Enable user interaction
-                    ),
-                  ),
-                ),
-            ],
+          child: Text(
+            name,
+            style: TextStyle(fontSize: 18),
           ),
         ),
       ),
+    );
+  }
+
+  // 3D Simulation for the company card
+  Widget _buildCompanySimulation() {
+    // This is a placeholder for the 3D visualization
+    // You'll need to install a 3D rendering package like model_viewer_plus
+    // For now, we'll use a simple placeholder
+    return Stack(
+      children: [
+        // 3D model visualization placeholder
+        Container(
+          color: Colors.grey.shade100,
+          child: Center(
+            child: Icon(Icons.view_in_ar, size: 60, color: Colors.blue),
+          ),
+        ),
+        Positioned(
+          bottom: 8,
+          right: 8,
+          child: ElevatedButton.icon(
+            icon: Icon(Icons.open_in_full),
+            label: Text("View 3D Model"),
+            onPressed: () {
+              // Open full-screen 3D visualization
+              // This is where you would implement your full 3D visualization
+            },
+          ),
+        ),
+      ],
     );
   }
 
@@ -190,7 +262,7 @@ class _Page2State extends State<Page2> {
                   _buildCard("Stakeholder", _data['Stakeholder'] ?? {}),
                   _buildCard("Unternehmen", _data['Unternehmen'] ?? {}),
                   _buildCard("Interaktionsthemen", _data['Interaktionsthemen'] ?? {}),
-                  _buildCard("Umweltsphären", _data['Umweltsphären'] ?? {}),
+                  _buildCard("Umweltsphaeren", _data['Umweltsphaeren'] ?? {}),
                 ],
               ),
             ),

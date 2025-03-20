@@ -1,49 +1,134 @@
 {
-    "StGallenModel": {
-      "Stakeholder": {
-        "Kunden": {},
-        "Lieferanten": {},
-        "Kapitalgeber": {},     
-        "Staat": {},
-        "Oeffentlichkeit, Medien, NGOs": {},
-        "Konkurrenz": {}
-      },
-      "Unternehmen": {
-        "Orndungs-Momente":{
-          "Governance": {
-          },
-          "Strategie": {
-          
-          },
-          "Strukturen": {
-        
-          },
-          "Kultur": {
+  "StGallenModel": {
+    "Stakeholder": {
+      "name": "Stakeholder",
+      "isActive": false,
+      "children": {
+        "Kunden": {
+          "name": "Kunden",
+          "isActive": false
+        },
+        "Lieferanten": {
+          "name": "Lieferanten",
+          "isActive": false
+        },
+        "Kapitalgeber": {
+          "name": "Kapitalgeber",
+          "isActive": false
+        },
+        "Staat": {
+          "name": "Staat",
+          "isActive": false
+        },
+        "Oeffentlichkeit, Medien, NGOs": {
+          "name": "Oeffentlichkeit, Medien, NGOs",
+          "isActive": false
+        },
+        "Konkurrenz": {
+          "name": "Konkurrenz",
+          "isActive": false
+        }
+      }
+    },
+    "Unternehmen": {
+      "name": "Unternehmen",
+      "isActive": false,
+      "children": {
+        "Orndungs-Momente": {
+          "name": "Orndungs-Momente",
+          "isActive": false,
+          "children": {
+            "Governance": {
+              "name": "Governance",
+              "isActive": false
+            },
+            "Strategie": {
+              "name": "Strategie",
+              "isActive": false
+            },
+            "Strukturen": {
+              "name": "Strukturen",
+              "isActive": false
+            },
+            "Kultur": {
+              "name": "Kultur",
+              "isActive": false
+            }
           }
         },
         "Prozesse": {
-          "Managementprozesse": {
-          },
-          "Geschaeftsprozesse & Geschaeftsmodell": {
-          },
-          "Unterstuetzungsprozesse": {
+          "name": "Prozesse",
+          "isActive": false,
+          "children": {
+            "Managementprozesse": {
+              "name": "Managementprozesse",
+              "isActive": false
+            },
+            "Geschaeftsprozesse & Geschaeftsmodell": {
+              "name": "Geschaeftsprozesse & Geschaeftsmodell",
+              "isActive": false
+            },
+            "Unterstuetzungsprozesse": {
+              "name": "Unterstuetzungsprozesse",
+              "isActive": false
+            }
           }
         },
         "Entwicklungsmodi": {
-          "Optimierung": {},
-          "Erneuerung": {}
+          "name": "Entwicklungsmodi",
+          "isActive": false,
+          "children": {
+            "Optimierung": {
+              "name": "Optimierung",
+              "isActive": false
+            },
+            "Erneuerung": {
+              "name": "Erneuerung",
+              "isActive": false
+            }
+          }
         }
-      },
-      "Interaktionsthemen": {
-        "Ressourcen": {},
-        "Normen & Werte": {},
-        "Anliegen & Interessen": {}
-      },
-      "Umweltsphaeren": {
-        "Gesellschaft": {},
-        "Natur": {},
-        "Technologie": {},
-        "Wirtschaft": {}
+      }
+    },
+    "Interaktionsthemen": {
+      "name": "Interaktionsthemen",
+      "isActive": false,
+      "children": {
+        "Ressourcen": {
+          "name": "Ressourcen",
+          "isActive": false
+        },
+        "Normen & Werte": {
+          "name": "Normen & Werte",
+          "isActive": false
+        },
+        "Anliegen & Interessen": {
+          "name": "Anliegen & Interessen",
+          "isActive": false
+        }
+      }
+    },
+    "Umweltsphaeren": {
+      "name": "Umweltsphaeren",
+      "isActive": false,
+      "children": {
+        "Gesellschaft": {
+          "name": "Gesellschaft",
+          "isActive": false
+        },
+        "Natur": {
+          "name": "Natur",
+          "isActive": false
+        },
+        "Technologie": {
+          "name": "Technologie",
+          "isActive": false
+        },
+        "Wirtschaft": {
+          "name": "Wirtschaft",
+          "isActive": false
+        }
       }
     }
   }
+}
