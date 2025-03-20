@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:byteclub/pages/3D_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'detail_screen.dart';
@@ -199,31 +200,47 @@ class _Page2State extends State<Page2> {
 
   // 3D Simulation for the company card
   Widget _buildCompanySimulation() {
-    // This is a placeholder for the 3D visualization
-    // You'll need to install a 3D rendering package like model_viewer_plus
-    // For now, we'll use a simple placeholder
-    return Stack(
-      children: [
-        // 3D model visualization placeholder
-        Container(
-          color: Colors.grey.shade100,
-          child: Center(
-            child: Icon(Icons.view_in_ar, size: 60, color: Colors.blue),
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.grey.shade300),
+      ),
+      child: Stack(
+        children: [
+          // Use the actual 3D model viewer
+          Building3DViewer(
+            modelPath: 'lib/models/building.obj',
+            height: 180,
           ),
-        ),
-        Positioned(
-          bottom: 8,
-          right: 8,
-          child: ElevatedButton.icon(
-            icon: Icon(Icons.open_in_full),
-            label: Text("View 3D Model"),
-            onPressed: () {
-              // Open full-screen 3D visualization
-              // This is where you would implement your full 3D visualization
-            },
+          // Add a view in full screen button
+          Positioned(
+            bottom: 8,
+            right: 8,
+            child: ElevatedButton.icon(
+              icon: Icon(Icons.open_in_full),
+              label: Text("View Model"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue.shade700,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Scaffold(
+                      appBar: AppBar(title: Text('Business Model')),
+                      body: Building3DViewer(
+                        modelPath: 'lib/models/building.obj',
+                        height: MediaQuery.of(context).size.height,
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

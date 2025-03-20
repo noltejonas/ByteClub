@@ -1,0 +1,128 @@
+{
+  "Managementprozesse": [
+    {
+      "name": "SWOT Analysis",
+      "image": "lib/images/swot_analyse.jpeg",
+      "description": "Systematische Bewertung der internen Stärken und Schwächen sowie der externen Chancen und Risiken.",
+      "link": "https://www.mindtools.com/pages/article/newTMC_05.htm"
+    },
+    {
+      "name": "Porter's Five Forces",
+      "image": "lib/images/porter_five_forces.jpg",
+      "description": "Analyse der Wettbewerbsintensität und Marktattraktivität für strategische Entscheidungen.",
+      "link": "https://www.mindtools.com/pages/article/newTMC_08.htm"
+    },
+    {
+      "name": "PESTEL Analysis",
+      "image": "lib/images/pestel_analyse.png",
+      "description": "Analyse externer Einflussfaktoren: Politisch, Wirtschaftlich, Sozial, Technologisch, Ökologisch, Rechtlich.",
+      "link": "https://www.mindtools.com/pages/article/newTMC_09.htm"
+    },
+    {
+      "name": "Kosten-Nutzen-Analyse",
+      "image": "lib/images/kosten_nutzen_analyse.png",
+      "description": "Quantitative Bewertung der Wirtschaftlichkeit von Projekten und Maßnahmen.",
+      "link": "https://www.smartsheet.com/cost-benefit-analysis"
+    }
+  ],
+  "Geschaeftsprozesse": [
+    {
+      "name": "SWOT Analysis",
+      "image": "lib/images/swot_analyse.jpeg",
+      "description": "Identifizieren Sie Stärken und Schwächen in Ihren Geschäftsprozessen, um Optimierungspotentiale zu erkennen.",
+      "link": "https://www.mindtools.com/pages/article/newTMC_05.htm"
+    }
+  ],
+  "Geschaeftsmodelle": [
+    {
+      "name": "SWOT Analysis",
+      "image": "lib/images/swot_analyse.jpeg",
+      "description": "Bewerten Sie Ihr Geschäftsmodell hinsichtlich Stärken, Schwächen, Chancen und Risiken.",
+      "link": "https://www.mindtools.com/pages/article/newTMC_05.htm"
+    }
+  ],
+  "Strategie": [
+    {
+      "name": "SWOT Analysis",
+      "image": "lib/images/swot_analyse.jpeg",
+      "description": "Grundlage für strategische Entscheidungen durch Identifikation von Stärken, Schwächen, Chancen und Risiken.",
+      "link": "https://www.mindtools.com/pages/article/newTMC_05.htm"
+    }
+  ],
+  "Lieferanten": [
+    {
+      "name": "Porter's Five Forces",
+      "image": "lib/images/porter_five_forces.jpg",
+      "description": "Analyse der Verhandlungsmacht von Lieferanten und deren Einfluss auf Ihr Unternehmen.",
+      "link": "https://www.mindtools.com/pages/article/newTMC_08.htm"
+    }
+  ],
+  "Kunden": [
+    {
+      "name": "Porter's Five Forces",
+      "image": "lib/images/porter_five_forces.jpg",
+      "description": "Analyse der Verhandlungsmacht von Kunden und deren Einfluss auf Ihre Marktposition.",
+      "link": "https://www.mindtools.com/pages/article/newTMC_08.htm"
+    }
+  ],
+  "Konkurrenz": [
+    {
+      "name": "Porter's Five Forces",
+      "image": "lib/images/porter_five_forces.jpg",
+      "description": "Bewertung der Wettbewerbsintensität und Positionierung gegenüber Konkurrenten.",
+      "link": "https://www.mindtools.com/pages/article/newTMC_08.htm"
+    }
+  ],
+  "Gesellschaft": [
+    {
+      "name": "Porter's Five Forces",
+      "image": "lib/images/porter_five_forces.jpg",
+      "description": "Analyse gesellschaftlicher Einflussfaktoren auf die Wettbewerbssituation.",
+      "link": "https://www.mindtools.com/pages/article/newTMC_08.htm"
+    },
+    {
+      "name": "PESTEL Analysis",
+      "image": "lib/images/pestel_analyse.png",
+      "description": "Bewertung gesellschaftlicher Trends und sozialer Faktoren und deren Einfluss auf Ihr Unternehmen.",
+      "link": "https://www.mindtools.com/pages/article/newTMC_09.htm"
+    }
+  ],
+  "Wirtschaft": [
+    {
+      "name": "Porter's Five Forces",
+      "image": "lib/images/porter_five_forces.jpg",
+      "description": "Analyse wirtschaftlicher Faktoren und deren Einfluss auf die Wettbewerbsintensität.",
+      "link": "https://www.mindtools.com/pages/article/newTMC_08.htm"
+    },
+    {
+      "name": "PESTEL Analysis",
+      "image": "lib/images/pestel_analyse.png",
+      "description": "Analyse wirtschaftlicher Einflussfaktoren wie Konjunktur, Marktentwicklung und Zinsen.",
+      "link": "https://www.mindtools.com/pages/article/newTMC_09.htm"
+    }
+  ],
+  "Natur": [
+    {
+      "name": "PESTEL Analysis",
+      "image": "lib/images/pestel_analyse.png",
+      "description": "Analyse ökologischer Faktoren und deren Auswirkungen auf Ihr Unternehmen.",
+      "link": "https://www.mindtools.com/pages/article/newTMC_09.htm"
+    }
+  ],
+  "Technologie": [
+    {
+      "name": "PESTEL Analysis",
+      "image": "lib/images/pestel_analyse.png",
+      "description": "Bewertung technologischer Innovationen und Trends und deren Einfluss auf Ihr Geschäftsmodell.",
+      "link": "https://www.mindtools.com/pages/article/newTMC_09.htm"
+    }
+  ],
+  "Unterstützungsprozesse": [
+    {
+      "name": "Kosten-Nutzen-Analyse",
+      "image": "lib/images/kosten_nutzen_analyse.png",
+      "description": "Bewertung der Wirtschaftlichkeit von Unterstützungsprozessen und deren Optimierung.",
+      "link": "https://www.smartsheet.com/cost-benefit-analysis"
+    }
+  ]
+}

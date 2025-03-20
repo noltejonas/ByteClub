@@ -1,4 +1,5 @@
 import 'package:byteclub/pages/3D_page.dart';
+import 'package:byteclub/pages/AreaDetailScreen.dart';
 import 'package:flutter/material.dart';
 
 class DetailScreen extends StatelessWidget {
@@ -61,20 +62,33 @@ class DetailScreen extends StatelessWidget {
         ),
       ),
       child: InkWell(
-        onTap: subDetails.isNotEmpty
-            ? () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => DetailScreen(
-                      parentCategory: name,
-                      details: subDetails,
-                      impactedParts: impactedParts,
-                    ),
-                  ),
-                );
-              }
-            : null,
+        onTap: () {
+          if (subDetails.isNotEmpty) {
+            // Navigate to next level of details if there are children
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => DetailScreen(
+                  parentCategory: name,
+                  details: subDetails,
+                  impactedParts: impactedParts,
+                ),
+              ),
+            );
+          } else {
+            // Navigate to Area Detail Screen for leaf nodes (deepest level)
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AreaDetailScreen(
+                  areaName: name,
+                  isImpacted: isImpacted,
+                  parentCategory: parentCategory,
+                ),
+              ),
+            );
+          }
+        },
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -92,8 +106,7 @@ class DetailScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  if (subDetails.isNotEmpty)
-                    Icon(Icons.chevron_right, color: Colors.grey),
+                  Icon(Icons.chevron_right, color: Colors.grey),
                 ],
               ),
               SizedBox(height: 12),
