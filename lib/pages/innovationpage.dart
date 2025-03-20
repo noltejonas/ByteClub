@@ -43,8 +43,7 @@ class Page1 extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Image.network(
-                  'https://via.placeholder.com/150',
-                  height: 100,
+'',                  height: 100,
                   width: 100,
                 ),
                 Text('Card ${index + 1}', style: TextStyle(fontSize: 24)),
