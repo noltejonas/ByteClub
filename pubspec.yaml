@@ -37,9 +37,9 @@ dependencies:
   provider: ^6.1.2
   charts_flutter: ^0.12.0
   fl_chart: ^0.70.2
-  flutter_ai_toolkit: ^0.6.8
-  google_generative_ai: ^0.4.6
-  firebase_core: ^3.12.1
+
+  flame: ^1.26.0
+  three_dart: ^0.0.16
 
 dev_dependencies:
   flutter_test:
