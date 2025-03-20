@@ -1,0 +1,49 @@
+{
+    "StGallenModel": {
+      "Stakeholder": {
+        "Kunden": {},
+        "Lieferanten": {},
+        "Kapitalgeber": {},     
+        "Staat": {},
+        "Oeffentlichkeit, Medien, NGOs": {},
+        "Konkurrenz": {}
+      },
+      "Unternehmen": {
+        "Orndungs-Momente":{
+          "Governance": {
+          },
+          "Strategie": {
+          
+          },
+          "Strukturen": {
+        
+          },
+          "Kultur": {
+          }
+        },
+        "Prozesse": {
+          "Managementprozesse": {
+          },
+          "Geschaeftsprozesse & Geschaeftsmodell": {
+          },
+          "Unterstuetzungsprozesse": {
+          }
+        },
+        "Entwicklungsmodi": {
+          "Optimierung": {},
+          "Erneuerung": {}
+        }
+      },
+      "Interaktionsthemen": {
+        "Ressourcen": {},
+        "Normen & Werte": {},
+        "Anliegen & Interessen": {}
+      },
+      "Umweltsphaeren": {
+        "Gesellschaft": {},
+        "Natur": {},
+        "Technologie": {},
+        "Wirtschaft": {}
+      }
+    }
+  }

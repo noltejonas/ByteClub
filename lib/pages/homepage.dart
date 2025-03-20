@@ -1,8 +1,10 @@
-import 'package:byteclub/gpt_service.dart';
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_cube/flutter_cube.dart';
+import 'detail_screen.dart';
+import 'package:byteclub/gpt_service.dart';
 import 'dart:math' as math;
-import 'dart:async';
 
 class Page2 extends StatefulWidget {
   @override
@@ -24,11 +26,21 @@ class _Page2State extends State<Page2> {
   final List<Map<String, String>> _messages = [];
 
   bool _isLoading = false;
+  Map<String, dynamic> _data = {}; // Define the _data variable
 
-  Object? _cubeObject;
-  double _rotationX = 0;
-  double _rotationY = 0;
-  Scene? _scene;
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    final String response = await rootBundle.loadString('lib/constants/data.json');
+    final data = await json.decode(response);
+    setState(() {
+      _data = data['StGallenModel'];
+    });
+  }
 
   Future<void> _sendMessage() async {
     final text = _controller.text.trim();
@@ -76,125 +88,112 @@ class _Page2State extends State<Page2> {
     );
   }
 
+  Widget _buildCard(String title, Map<String, dynamic> content) {
+    return Card(
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DetailScreen(
+                parentCategory: title,
+                details: content,
+              ),
+            ),
+          );
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title, style: TextStyle(fontSize: 18)),
+              if (title == "Unternehmen")
+                Padding(
+                  padding: const EdgeInsets.only(top: 16.0),
+                  child: Container(
+                    height: 300, // Set a fixed height for the Cube widget
+                    child: Cube(
+                      onSceneCreated: (Scene scene) {
+                         Object object = Object(fileName: 'lib/models/building.obj');
+                        object.position.setValues(0, 0, 0);
+                        object.scale.setValues(0.1, 0.1, 0.1); // Adjust the scale if necessary
+                        scene.world.add(object);
+                        scene.camera.zoom = 10;
+                        scene.camera.position.setValues(0, 0, 10); // Adjust the camera position
+                   // Center the camera target on the object
+
+                        // Custom interaction handling
+                        double initialX = 0;
+                        double initialY = 0;
+                        double rotationX = 0;
+                        double rotationY = 0;
+                        /*
+                        scene.onUpdate = () {
+                          // Limit rotation to 5 degrees in each direction
+                          rotationX = rotationX.clamp(-math.pi / 36, math.pi / 36);
+                          rotationY = rotationY.clamp(-math.pi / 36, math.pi / 36);
+
+                          object.rotation.setValues(rotationX, rotationY, 0);
+                        };
+
+                        scene.onPointerMove = (details) {
+                          if (details.delta.dx != 0 || details.delta.dy != 0) {
+                            rotationX += details.delta.dy * 0.01;
+                            rotationY += details.delta.dx * 0.01;
+                          }
+                        };*/
+                      },
+                      interactive: true, // Enable user interaction
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Chat with Assistant"),
+        title: Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: _controller,
+                decoration: InputDecoration(
+                  hintText: "Ask a case...",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ),
+            IconButton(
+              icon: Icon(Icons.send),
+              onPressed: _isLoading ? null : _sendMessage,
+            ),
+          ],
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _controller,
-                    decoration: InputDecoration(
-                      hintText: "Type your message...",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(width: 8),
-                IconButton(
-                  icon: Icon(Icons.send),
-                  onPressed: _isLoading ? null : _sendMessage,
-                ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text('Shareholders'),
-                ),
-              ),
-            ),
             Expanded(
-              child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    children: [
-                      Text('Unternehmen'),
-                      Expanded(
-                        child: GestureDetector(
-                          behavior: HitTestBehavior.opaque,
-                          onPanUpdate: (details) {
-                            setState(() {
-                              _rotationX += details.delta.dy * 0.05;
-                              _rotationY += details.delta.dx * 0.05;
-                              _rotationX = _rotationX.clamp(-math.pi / 36, math.pi / 36);
-                              _rotationY = _rotationY.clamp(-math.pi / 36, math.pi / 36);
-                              if (_cubeObject != null) {
-                                _cubeObject!.rotation.setValues(_rotationX, _rotationY, 0);
-                              }
-                              if (_scene != null) {
-                                _scene!.update();
-                              }
-                            });
-                          },
-                          onPanEnd: (details) {
-                            // Animate the cube back to its original position
-                            Timer.periodic(Duration(milliseconds: 16), (timer) {
-                              setState(() {
-                                _rotationX *= 0.9;
-                                _rotationY *= 0.9;
-                                if (_rotationX.abs() < 0.001 && _rotationY.abs() < 0.001) {
-                                  _rotationX = 0;
-                                  _rotationY = 0;
-                                  timer.cancel();
-                                }
-                                if (_cubeObject != null) {
-                                  _cubeObject!.rotation.setValues(_rotationX, _rotationY, 0);
-                                }
-                              });
-                            });
-                          },
-                          child: Cube(
-                            onSceneCreated: (Scene scene) {
-                              final Object object = Object(fileName: 'lib/models/building.obj');
-                              object.position.setValues(0, 0, 0);
-                              object.scale.setValues(0.1, 0.1, 0.1); // Adjust the scale if necessary
-                              scene.world.add(object);
-                              scene.camera.zoom = 10;
-                              scene.camera.position.setValues(0, 0, 10); // Adjust the camera position
-                              _cubeObject = object;
-                              _scene = scene;
-                            },
-                            interactive: false, // Disable built-in interaction as we handle it via GestureDetector
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+              child: ListView(
+                children: [
+                  ..._messages.map(_buildMessage).toList(),
+                  _buildCard("Stakeholder", _data['Stakeholder'] ?? {}),
+                  _buildCard("Unternehmen", _data['Unternehmen'] ?? {}),
+                  _buildCard("Interaktionsthemen", _data['Interaktionsthemen'] ?? {}),
+                  _buildCard("Umweltsphären", _data['Umweltsphären'] ?? {}),
+                ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text('Interaktionsthemen'),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text('Umweltsphären'),
-                ),
-              ),
-            ),
-            SizedBox(height: 20),
           ],
         ),
       ),
