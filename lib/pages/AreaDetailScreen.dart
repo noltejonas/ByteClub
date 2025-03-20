@@ -30,6 +30,19 @@ class _AreaDetailScreenState extends State<AreaDetailScreen> {
   );
   bool _toolsLoading = true;
   List<Map<String, String>> _availableTools = [];
+  
+  // New chat functionality
+  final TextEditingController _questionController = TextEditingController();
+  final List<Map<String, String>> _chatMessages = [];
+  bool _isSendingMessage = false;
+  final ScrollController _scrollController = ScrollController();
+  
+  @override
+  void dispose() {
+    _questionController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -202,6 +215,88 @@ class _AreaDetailScreenState extends State<AreaDetailScreen> {
     }).toList();
   }
 
+  Future<void> _sendMessage(String message) async {
+    if (message.trim().isEmpty) return;
+    
+    setState(() {
+      // Add user message to chat
+      _chatMessages.add({
+        'role': 'user',
+        'content': message,
+      });
+      _isSendingMessage = true;
+      _questionController.clear();
+    });
+    
+    // Scroll to bottom of chat
+    Future.delayed(Duration(milliseconds: 100), () {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+    
+    try {
+      // Create conversation history with enhanced system prompt
+      List<Map<String, String>> conversation = [
+        {
+          "role": "system", 
+          "content": "You are a highly experienced subject matter expert in business models and impact analysis. " +
+                    "Provide detailed, precise responses in 1-3 sentences that demonstrate deep domain knowledge. " +
+                    "Be specific and technical where appropriate, using industry terminology. " +
+                    "Focus on actionable insights rather than general information."
+        },
+        {"role": "assistant", "content": "Impact Analysis for ${widget.areaName}: $_impactDescription"},
+      ];
+      
+      // Add previous chat messages to maintain context
+      conversation.addAll(_chatMessages.where((msg) => msg['role'] != null && msg['content'] != null)
+          .map((msg) => {"role": msg['role']!, "content": msg['content']!}));
+      
+      // Send to GPT service with enhanced parameters
+      final response = await gptService.sendMessage(
+        message,
+        conversation,
+        {
+          "context": "Detailed impact analysis for ${widget.areaName} in ${widget.parentCategory}",
+          "perspective": "subject matter expert"
+        }
+      );
+      
+      setState(() {
+        // Add AI response to chat
+        _chatMessages.add({
+          'role': 'assistant',
+          'content': response.trim(),
+        });
+        _isSendingMessage = false;
+      });
+      
+      // Scroll to bottom again after response
+      Future.delayed(Duration(milliseconds: 100), () {
+        if (_scrollController.hasClients) {
+          _scrollController.animateTo(
+            _scrollController.position.maxScrollExtent,
+            duration: Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
+        }
+      });
+    } catch (e) {
+      print("Error sending message: $e");
+      setState(() {
+        _chatMessages.add({
+          'role': 'assistant',
+          'content': "I'm sorry, I couldn't process your question. Please try again.",
+        });
+        _isSendingMessage = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -211,163 +306,372 @@ class _AreaDetailScreenState extends State<AreaDetailScreen> {
       ),
       body: Container(
         color: widget.isImpacted ? Colors.green.withOpacity(0.05) : null,
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Bold heading and impact badge
-              
-              
-              // Impact badge and Tools button in the same row
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Top section with badges and category
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (widget.isImpacted)
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      margin: EdgeInsets.only(right: 10),
-                      decoration: BoxDecoration(
-                        color: Colors.green,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        'Impacted',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  // Tools button - only show if tools are available
-                  if (_hasAvailableTools())
-                    InkWell(
-                      onTap: () {
-                        _navigateToTools();
-                      },
-                      child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: Colors.blue,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.build_outlined, size: 16, color: Colors.white),
-                            SizedBox(width: 4),
-                            Text(
-                              'Tools',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
+                  // Top row with impact badge and tools button
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      if (widget.isImpacted)
+                        Container(
+                          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: Colors.green,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            'Impacted',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
                             ),
-                          ],
+                          ),
+                        ),
+                      if (_hasAvailableTools())
+                        InkWell(
+                          onTap: () {
+                            _navigateToTools();
+                          },
+                          child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: Colors.blue,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.build_outlined, size: 16, color: Colors.white),
+                                SizedBox(width: 4),
+                                Text(
+                                  'Tools',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                  
+                  SizedBox(height: 12),
+                  
+                  // Parent category
+                  Row(
+                    children: [
+                      Icon(Icons.category_outlined, size: 18, color: Colors.grey[600]),
+                      SizedBox(width: 8),
+                      Text(
+                        "Category: ${widget.parentCategory}",
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey[600],
                         ),
                       ),
-                    ),
-                ],
-              ),
-                            SizedBox(height: 12),
-
-              
-              // Parent category
-              Row(
-                children: [
-                  Icon(Icons.category_outlined, size: 18, color: Colors.grey[600]),
-                  SizedBox(width: 8),
+                    ],
+                  ),
+                  
+                  SizedBox(height: 16),
+                  
+                  // Impact Analysis heading
                   Text(
-                    "Category: ${widget.parentCategory}",
+                    "Impact Analysis",
                     style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey[600],
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ],
               ),
-              
-              SizedBox(height: 12),
-              
-              if (false) // Set to true during debugging, false for production
-                _buildDebugButton(),
-
-              // Impact Analysis section
-              Text(
-                "Impact Analysis",
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              
-              SizedBox(height: 16),
-              
-              // ChatGPT response
-              Expanded(
-                child: _isLoading
-                  ? Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          CircularProgressIndicator(),
-                          SizedBox(height: 16),
-                          Text("Analyzing impact...", 
-                            style: TextStyle(color: Colors.grey[600]),
-                          ),
-                        ],
-                      ),
-                    )
-                  : Container(
-                      padding: EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius: 10,
-                            offset: Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: SingleChildScrollView(
-                              child: Text(
-                                _impactDescription.isEmpty ? "No impact analysis available." : _impactDescription,
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  height: 1.6,
-                                ),
+            ),
+            
+            // Main scrollable content area (impact analysis + chat)
+            Expanded(
+              child: _isLoading
+                ? Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CircularProgressIndicator(),
+                        SizedBox(height: 16),
+                        Text("Analyzing impact...", 
+                          style: TextStyle(color: Colors.grey[600]),
+                        ),
+                      ],
+                    ),
+                  )
+                : ListView(
+                    controller: _scrollController,
+                    padding: EdgeInsets.all(24),
+                    children: [
+                      // Initial impact analysis card
+                      Container(
+                        padding: EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.05),
+                              blurRadius: 10,
+                              offset: Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              _impactDescription.isEmpty ? "No impact analysis available." : _impactDescription,
+                              style: TextStyle(
+                                fontSize: 16,
+                                height: 1.5,
                               ),
                             ),
-                          ),
-                          SizedBox(height: 12),
-                          Row(
-                            children: [
-                              Icon(Icons.auto_awesome, size: 14, color: Colors.grey[500]),
-                              SizedBox(width: 4),
-                              Expanded(
-                                child: Text(
-                                  "AI-generated impact analysis",
-                                  style: TextStyle(
-                                    color: Colors.grey[500],
-                                    fontSize: 12,
-                                    fontStyle: FontStyle.italic,
+                            SizedBox(height: 12),
+                            Row(
+                              children: [
+                                Icon(Icons.auto_awesome, size: 14, color: Colors.grey[500]),
+                                SizedBox(width: 4),
+                                Expanded(
+                                  child: Text(
+                                    "AI-generated impact analysis",
+                                    style: TextStyle(
+                                      color: Colors.grey[500],
+                                      fontSize: 12,
+                                      fontStyle: FontStyle.italic,
+                                    ),
                                   ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      
+                      SizedBox(height: 24),
+                      
+                      // Chat messages
+                      ..._chatMessages.map((message) {
+                        final bool isUser = message['role'] == 'user';
+                        return Padding(
+                          padding: EdgeInsets.only(bottom: 12),
+                          child: Row(
+                            mainAxisAlignment: isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (!isUser) 
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 4.0),
+                                  child: CircleAvatar(
+                                    backgroundColor: Colors.blue.shade100,
+                                    radius: 16,
+                                    child: Icon(
+                                      Icons.psychology, // Changed to expert icon
+                                      color: Colors.blue.shade700,
+                                      size: 16
+                                    ),
+                                  ),
+                                ),
+                              
+                              SizedBox(width: isUser ? 0 : 8),
+                              
+                              Flexible(
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                  decoration: BoxDecoration(
+                                    color: isUser ? Colors.blue : Colors.grey.shade100,
+                                    borderRadius: BorderRadius.circular(18),
+                                    boxShadow: !isUser ? [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.05),
+                                        blurRadius: 5,
+                                        offset: Offset(0, 2),
+                                      ),
+                                    ] : null,
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        message['content'] ?? '',
+                                        style: TextStyle(
+                                          color: isUser ? Colors.white : Colors.black87,
+                                          height: 1.4,
+                                        ),
+                                      ),
+                                      
+                                      // Add expert label for AI messages
+                                      if (!isUser)
+                                        Padding(
+                                          padding: const EdgeInsets.only(top: 6.0),
+                                          child: Text(
+                                            "Expert Analysis",
+                                            style: TextStyle(
+                                              color: Colors.grey.shade600,
+                                              fontSize: 10,
+                                              fontStyle: FontStyle.italic,
+                                            ),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              
+                              SizedBox(width: isUser ? 8 : 0),
+                              
+                              if (isUser)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 4.0),
+                                  child: CircleAvatar(
+                                    backgroundColor: Colors.blue,
+                                    radius: 16,
+                                    child: Icon(Icons.person, color: Colors.white, size: 16),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                      
+                      // Typing indicator when sending message
+                      if (_isSendingMessage)
+                        Padding(
+                          padding: EdgeInsets.only(bottom: 12, left: 12),
+                          child: Row(
+                            children: [
+                              CircleAvatar(
+                                backgroundColor: Colors.blue.shade100,
+                                radius: 16,
+                                child: Icon(Icons.auto_awesome, color: Colors.blue, size: 16),
+                              ),
+                              SizedBox(width: 8),
+                              Container(
+                                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.shade200,
+                                  borderRadius: BorderRadius.circular(18),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: 8,
+                                      height: 8,
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey.shade500,
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                    ),
+                                    SizedBox(width: 4),
+                                    Container(
+                                      width: 8,
+                                      height: 8,
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey.shade500,
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                    ),
+                                    SizedBox(width: 4),
+                                    Container(
+                                      width: 8,
+                                      height: 8,
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey.shade500,
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
                           ),
-                        ],
-                      ),
+                        ),
+                    ],
+                  ),
+            ),
+            
+            // Bottom section with text input and expert button
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  // Chat input field
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 10,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
                     ),
+                    child: TextField(
+                      controller: _questionController,
+                      decoration: InputDecoration(
+                        hintText: 'Further questions?',
+                        fillColor: Colors.transparent,
+                        filled: true,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(24),
+                          borderSide: BorderSide.none,
+                        ),
+                        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                        suffixIcon: IconButton(
+                          icon: Icon(Icons.send, color: Colors.blue),
+                          onPressed: () {
+                            _sendMessage(_questionController.text);
+                          },
+                        ),
+                      ),
+                      maxLines: 1,
+                      textInputAction: TextInputAction.send,
+                      onSubmitted: (value) {
+                        _sendMessage(value);
+                      },
+                    ),
+                  ),
+                  
+                  SizedBox(height: 16),
+                  
+                  // Expert contact button
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      icon: Icon(Icons.contact_support),
+                      label: Text('Get in touch with experts'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        foregroundColor: Colors.white,
+                        padding: EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                      ),
+                      onPressed: () {
+                        // Handle expert contact button press
+                        print('Contact experts button pressed');
+                        // You could implement contact functionality here
+                      },
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -413,6 +717,54 @@ class _AreaDetailScreenState extends State<AreaDetailScreen> {
         print("Has tools: ${_hasAvailableTools()}");
         print("Tools count: ${_availableTools.length}");
       },
+    );
+  }
+
+  Widget _buildFurtherQuestionsField() {
+    return TextField(
+      decoration: InputDecoration(
+        hintText: 'Further questions?',
+        filled: true,
+        fillColor: Colors.white,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.grey.shade300),
+        ),
+        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        suffixIcon: Icon(Icons.send, color: Colors.blue),
+      ),
+      maxLines: 1,
+      textInputAction: TextInputAction.send,
+      onSubmitted: (value) {
+        if (value.trim().isNotEmpty) {
+          // Handle submitting the question
+          print('Question submitted: $value');
+          // You could add additional functionality here
+        }
+      },
+    );
+  }
+
+  Widget _buildExpertContactButton() {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        icon: Icon(Icons.contact_support),
+        label: Text('Get in touch with experts'),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.blue,
+          foregroundColor: Colors.white,
+          padding: EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        onPressed: () {
+          // Handle expert contact button press
+          print('Contact experts button pressed');
+          // You could add functionality to contact experts here
+        },
+      ),
     );
   }
 }
