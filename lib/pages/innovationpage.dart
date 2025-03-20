@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'dart:ui'; // For BackdropFilter
 
+import 'package:flutter/material.dart';
+import 'dart:ui'; // For ImageFilter
+import 'package:flutter/material.dart';
+import 'dart:ui'; // For ImageFilter
+
 class Page1 extends StatelessWidget {
   final PageController _pageController = PageController();
 
@@ -51,26 +56,40 @@ class Page1 extends StatelessWidget {
   Widget buildCard(int index) {
     return Card(
       margin: EdgeInsets.all(10),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: Stack(
         children: [
           Container(
             height: 300, // Adjust card height to fit content
             decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
               image: DecorationImage(
                 image: AssetImage(imagePaths[index]),
                 fit: BoxFit.cover,
               ),
             ),
           ),
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [Colors.transparent, Colors.black.withOpacity(0.7)],
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              height: 100, // Adjust height for blurred area
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        Colors.black.withOpacity(0.7),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.vertical(
+                      bottom: Radius.circular(15),
+                    ),
                   ),
                 ),
               ),
@@ -79,7 +98,7 @@ class Page1 extends StatelessWidget {
           Positioned(
             bottom: 10,
             left: 10,
-            right: 10,
+            right: 60, // Leave space for icons
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -101,33 +120,30 @@ class Page1 extends StatelessWidget {
               ],
             ),
           ),
-          Align(
-            alignment: Alignment.bottomRight,
-            child: Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.thumb_up, color: Colors.white),
-                    onPressed: () {
-                      // Handle upvote action
-                    },
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.thumb_down, color: Colors.white),
-                    onPressed: () {
-                      // Handle downvote action
-                    },
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.share, color: Colors.white),
-                    onPressed: () {
-                      // Handle share action
-                    },
-                  ),
-                ],
-              ),
+          Positioned(
+            bottom: 10,
+            right: 10,
+            child: Row(
+              children: [
+                IconButton(
+                  icon: Icon(Icons.thumb_up, color: Colors.white),
+                  onPressed: () {
+                    // Handle upvote action
+                  },
+                ),
+                IconButton(
+                  icon: Icon(Icons.thumb_down, color: Colors.white),
+                  onPressed: () {
+                    // Handle downvote action
+                  },
+                ),
+                IconButton(
+                  icon: Icon(Icons.share, color: Colors.white),
+                  onPressed: () {
+                    // Handle share action
+                  },
+                ),
+              ],
             ),
           ),
         ],

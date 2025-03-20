@@ -11,6 +11,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
+  double _fabIconSize = 60; // Initial size for the FAB icon
 
   static List<Widget> _pages = <Widget>[Page1(), Page2(), Page3()];
 
@@ -31,11 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
             label: '',
           ),
           BottomNavigationBarItem(
-            icon: Image.asset(
-              'lib/images/icon.png',
-              width: 24, // Set the width to fit the icon size
-              height: 24, // Set the height to fit the icon size
-            ),
+            icon: Image.asset('lib/images/icon.png', width: 24, height: 24),
             label: '',
           ),
           const BottomNavigationBarItem(icon: Icon(Icons.person), label: ''),
@@ -43,14 +40,26 @@ class _HomeScreenState extends State<HomeScreen> {
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _onItemTapped(1);
+      floatingActionButton: GestureDetector(
+        onLongPress: () {
+          setState(() {
+            _fabIconSize = 80; // Increase size on long press
+          });
         },
-        child: Image.asset(
-          'lib/images/icon.png',
-          width: 60, // Set the width to fit the icon size
-          height: 60, // Set the height to fit the icon size
+        onLongPressUp: () {
+          setState(() {
+            _fabIconSize = 60; // Reset size when long press is released
+          });
+        },
+        child: FloatingActionButton(
+          onPressed: () {
+            _onItemTapped(1);
+          },
+          child: Image.asset(
+            'lib/images/icon.png',
+            width: _fabIconSize,
+            height: _fabIconSize,
+          ),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
