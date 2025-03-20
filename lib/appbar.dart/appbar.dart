@@ -1,9 +1,6 @@
-import 'package:byteclub/main.dart';
 import 'package:byteclub/pages/homepage.dart';
 import 'package:byteclub/pages/innovationpage.dart';
 import 'package:byteclub/pages/profilpage.dart';
-import 'package:flutter/material.dart';
-
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -13,7 +10,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
-  double _fabIconSize = 60; // Initial size for the FAB icon
+  double _fabIconSize = 120.0; // Standard-Größe
 
   static List<Widget> _pages = <Widget>[Page1(), Page2(), Page3()];
 
@@ -34,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
             label: '',
           ),
           BottomNavigationBarItem(
-            icon: Image.asset('lib/images/icon.png', width: 24, height: 24),
+            icon: Image.asset('lib/images/icon.png', width: 0, height: 0),
             label: '',
           ),
           const BottomNavigationBarItem(icon: Icon(Icons.person), label: ''),
@@ -42,25 +39,37 @@ class _HomeScreenState extends State<HomeScreen> {
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
       ),
-      floatingActionButton: GestureDetector(
-        onLongPress: () {
-          setState(() {
-            _fabIconSize = 80; // Increase size on long press
-          });
-        },
-        onLongPressUp: () {
-          setState(() {
-            _fabIconSize = 60; // Reset size when long press is released
-          });
-        },
-        child: FloatingActionButton(
-          onPressed: () {
+      // Verwenden Sie ein Container statt FloatingActionButton
+      floatingActionButton: Container(
+        margin: EdgeInsets.only(bottom: 15),
+        width: _fabIconSize,
+        height: _fabIconSize,
+        child: GestureDetector(
+          onTap: () {
             _onItemTapped(1);
           },
-          child: Image.asset(
-            'lib/images/icon.png',
+          onLongPress: () {
+            setState(() {
+              _fabIconSize = 350.0; // Deutlich größer beim Gedrückthalten
+              print("Size increased to: $_fabIconSize"); // Debug-Ausgabe
+            });
+          },
+          onLongPressUp: () {
+            setState(() {
+              _fabIconSize = 100.0; // Zurück zur Standard-Größe
+              print("Size reset to: $_fabIconSize"); // Debug-Ausgabe
+            });
+          },
+          child: AnimatedContainer(
+            duration: Duration(
+              milliseconds: 200,
+            ), // Animation für flüssigeren Übergang
             width: _fabIconSize,
             height: _fabIconSize,
+            child: Image.asset(
+              'lib/images/icon.png',
+              fit: BoxFit.contain, // Wichtig: Behält Proportionen bei
+            ),
           ),
         ),
       ),
