@@ -2,6 +2,7 @@ import 'package:byteclub/gpt_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cube/flutter_cube.dart';
 import 'dart:math' as math;
+import 'dart:async';
 
 class Page2 extends StatefulWidget {
   @override
@@ -23,6 +24,11 @@ class _Page2State extends State<Page2> {
   final List<Map<String, String>> _messages = [];
 
   bool _isLoading = false;
+
+  Object? _cubeObject;
+  double _rotationX = 0;
+  double _rotationY = 0;
+  Scene? _scene;
 
   Future<void> _sendMessage() async {
     final text = _controller.text.trim();
@@ -117,38 +123,52 @@ class _Page2State extends State<Page2> {
                     children: [
                       Text('Unternehmen'),
                       Expanded(
-                        child: Cube(
-                          onSceneCreated: (Scene scene) {
-                            final Object object = Object(fileName: 'lib/models/building.obj');
-                            object.position.setValues(0, 0, 0);
-                            object.scale.setValues(0.1, 0.1, 0.1); // Adjust the scale if necessary
-                            scene.world.add(object);
-                            scene.camera.zoom = 10;
-                            scene.camera.position.setValues(0, 0, 10); // Adjust the camera position
-                            //scene.camera.target = object.position; // Center the camera target on the object
-
-                            // Custom interaction handling
-                            double initialX = 0;
-                            double initialY = 0;
-                            double rotationX = 0;
-                            double rotationY = 0;
-                            /** 
-                            scene.onUpdate = () {
-                              // Limit rotation to 5 degrees in each direction
-                              rotationX = rotationX.clamp(-math.pi / 36, math.pi / 36);
-                              rotationY = rotationY.clamp(-math.pi / 36, math.pi / 36);
-
-                              object.rotation.setValues(rotationX, rotationY, 0);
-                            };
-
-                            scene.onPointerMove = (details) {
-                              if (details.delta.dx != 0 || details.delta.dy != 0) {
-                                rotationX += details.delta.dy * 0.01;
-                                rotationY += details.delta.dx * 0.01;
+                        child: GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onPanUpdate: (details) {
+                            setState(() {
+                              _rotationX += details.delta.dy * 0.05;
+                              _rotationY += details.delta.dx * 0.05;
+                              _rotationX = _rotationX.clamp(-math.pi / 36, math.pi / 36);
+                              _rotationY = _rotationY.clamp(-math.pi / 36, math.pi / 36);
+                              if (_cubeObject != null) {
+                                _cubeObject!.rotation.setValues(_rotationX, _rotationY, 0);
                               }
-                            }; */
+                              if (_scene != null) {
+                                _scene!.update();
+                              }
+                            });
                           },
-                          interactive: true, // Enable user interaction
+                          onPanEnd: (details) {
+                            // Animate the cube back to its original position
+                            Timer.periodic(Duration(milliseconds: 16), (timer) {
+                              setState(() {
+                                _rotationX *= 0.9;
+                                _rotationY *= 0.9;
+                                if (_rotationX.abs() < 0.001 && _rotationY.abs() < 0.001) {
+                                  _rotationX = 0;
+                                  _rotationY = 0;
+                                  timer.cancel();
+                                }
+                                if (_cubeObject != null) {
+                                  _cubeObject!.rotation.setValues(_rotationX, _rotationY, 0);
+                                }
+                              });
+                            });
+                          },
+                          child: Cube(
+                            onSceneCreated: (Scene scene) {
+                              final Object object = Object(fileName: 'lib/models/building.obj');
+                              object.position.setValues(0, 0, 0);
+                              object.scale.setValues(0.1, 0.1, 0.1); // Adjust the scale if necessary
+                              scene.world.add(object);
+                              scene.camera.zoom = 10;
+                              scene.camera.position.setValues(0, 0, 10); // Adjust the camera position
+                              _cubeObject = object;
+                              _scene = scene;
+                            },
+                            interactive: false, // Disable built-in interaction as we handle it via GestureDetector
+                          ),
                         ),
                       ),
                     ],
