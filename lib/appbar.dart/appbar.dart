@@ -1,3 +1,4 @@
+import 'package:byteclub/pages/home2.dart';
 import 'package:byteclub/pages/homepage.dart';
 import 'package:byteclub/pages/innovationpage.dart';
 import 'package:byteclub/pages/profilpage.dart';
@@ -9,7 +10,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 1;
   double _fabIconSize = 120.0; // Standard-Größe
 
   static List<Widget> _pages = <Widget>[Page1(), Page2(), Page3()];
@@ -30,10 +31,11 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icon(Icons.trending_up),
             label: '',
           ),
+          
           BottomNavigationBarItem(
             icon: Image.asset('lib/images/icon.png', width: 0, height: 0),
             label: '',
-          ),
+          ), 
           const BottomNavigationBarItem(icon: Icon(Icons.person), label: ''),
         ],
         currentIndex: _selectedIndex,
@@ -41,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       // Verwenden Sie ein Container statt FloatingActionButton
       floatingActionButton: Container(
-        margin: EdgeInsets.only(bottom: 15),
+        margin: EdgeInsets.only(top: 5),
         width: _fabIconSize,
         height: _fabIconSize,
         child: GestureDetector(
@@ -50,13 +52,13 @@ class _HomeScreenState extends State<HomeScreen> {
           },
           onLongPress: () {
             setState(() {
-              _fabIconSize = 350.0; // Deutlich größer beim Gedrückthalten
+              _fabIconSize = 300.0; // Deutlich größer beim Gedrückthalten
               print("Size increased to: $_fabIconSize"); // Debug-Ausgabe
             });
           },
           onLongPressUp: () {
             setState(() {
-              _fabIconSize = 100.0; // Zurück zur Standard-Größe
+              _fabIconSize = 60.0; // Zurück zur Standard-Größe
               print("Size reset to: $_fabIconSize"); // Debug-Ausgabe
             });
           },

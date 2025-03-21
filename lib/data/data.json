@@ -27,6 +27,10 @@
         "Konkurrenz": {
           "name": "Konkurrenz",
           "isActive": false
+        },
+        "Mitarbeiter": {
+          "name": "Mitarbeiter",
+          "isActive": false
         }
       }
     },
