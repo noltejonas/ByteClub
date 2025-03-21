@@ -35,8 +35,8 @@ class DetailScreen extends StatelessWidget {
         padding: const EdgeInsets.all(12.0),
         children: [
           // Display header image for top-level categories
-          if (parentCategory == "Company" || 
-              parentCategory == "Unternehmen" || 
+          if (parentCategory == "Company" ||
+              parentCategory == "Unternehmen" ||
               parentCategory == "Business Model")
             Container(
               margin: EdgeInsets.only(bottom: 16, top: 8),
@@ -54,15 +54,14 @@ class DetailScreen extends StatelessWidget {
                 ],
               ),
               clipBehavior: Clip.antiAlias,
-              child: Image.asset(
-                'assets/images/Company.png',
-                fit: BoxFit.contain,
-              ),
+              child: Image.asset('lib/images/Company.png', fit: BoxFit.contain),
             ),
-          
+
           // Render all child items
-          ...details.keys.map((key) => _buildDetailCard(context, key, details[key])).toList(),
-          
+          ...details.keys
+              .map((key) => _buildDetailCard(context, key, details[key]))
+              .toList(),
+
           // Bottom padding
           SizedBox(height: 16),
         ],
@@ -70,33 +69,40 @@ class DetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailCard(BuildContext context, String key, Map<String, dynamic> content) {
+  Widget _buildDetailCard(
+    BuildContext context,
+    String key,
+    Map<String, dynamic> content,
+  ) {
     final String name = content['name'] ?? key;
     final bool isImpacted = impactedParts.contains(name);
-    final String description = content['description'] ?? 'No description available';
+    final String description =
+        content['description'] ?? 'No description available';
     final Map<String, dynamic> subDetails = content['children'] ?? {};
-    
+
     // Select icon based on category or subcategory
     IconData cardIcon;
     Color cardColor;
-    
+
     if (parentCategory == "Stakeholder" || name.contains("Stakeholder")) {
       cardIcon = Icons.people;
       cardColor = Colors.blue.shade700;
-    } else if (parentCategory == "Interaktionsthemen" || name.contains("Interaktion")) {
+    } else if (parentCategory == "Interaktionsthemen" ||
+        name.contains("Interaktion")) {
       cardIcon = Icons.settings_input_component;
       cardColor = Colors.orange.shade700;
     } else if (parentCategory == "Umweltsphaeren" || name.contains("Umwelt")) {
       cardIcon = Icons.public;
       cardColor = Colors.green.shade700;
-    } else if (parentCategory == "Unternehmen" || name.contains("Unternehmen")) {
+    } else if (parentCategory == "Unternehmen" ||
+        name.contains("Unternehmen")) {
       cardIcon = Icons.business;
       cardColor = Colors.blue.shade700;
     } else {
       cardIcon = Icons.category;
       cardColor = Colors.grey.shade700;
     }
-    
+
     // Use the same card styling as the homepage
     return Container(
       margin: EdgeInsets.only(bottom: 16),
@@ -127,11 +133,12 @@ class DetailScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => DetailScreen(
-                      parentCategory: name,
-                      details: subDetails,
-                      impactedParts: impactedParts,
-                    ),
+                    builder:
+                        (context) => DetailScreen(
+                          parentCategory: name,
+                          details: subDetails,
+                          impactedParts: impactedParts,
+                        ),
                   ),
                 );
               } else {
@@ -139,11 +146,12 @@ class DetailScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => AreaDetailScreen(
-                      areaName: name,
-                      isImpacted: isImpacted,
-                      parentCategory: parentCategory,
-                    ),
+                    builder:
+                        (context) => AreaDetailScreen(
+                          areaName: name,
+                          isImpacted: isImpacted,
+                          parentCategory: parentCategory,
+                        ),
                   ),
                 );
               }
@@ -173,7 +181,10 @@ class DetailScreen extends StatelessWidget {
                       ),
                       if (isImpacted)
                         Container(
-                          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 3,
+                          ),
                           decoration: BoxDecoration(
                             color: Colors.green.shade100,
                             borderRadius: BorderRadius.circular(12),
@@ -189,10 +200,7 @@ class DetailScreen extends StatelessWidget {
                           ),
                         ),
                       SizedBox(width: 8),
-                      Icon(
-                        Icons.chevron_right,
-                        color: Colors.grey.shade400,
-                      ),
+                      Icon(Icons.chevron_right, color: Colors.grey.shade400),
                     ],
                   ),
                   if (description != 'No description available') ...[

@@ -11,7 +11,7 @@ class Page3 extends StatefulWidget {
 class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   bool _isEditing = false;
-  
+
   // User profile data
   Map<String, dynamic> _userData = {
     'name': 'Alexander Miller',
@@ -21,8 +21,14 @@ class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
     'phone': '+1 (555) 123-4567',
     'department': 'Research & Development',
     'location': 'San Francisco, CA',
-    'bio': 'Passionate about driving innovation and leading cross-functional teams to develop cutting-edge solutions. 8+ years of experience in product development and strategic planning.',
-    'expertise': ['Strategic Planning', 'Agile Development', 'Digital Transformation', 'Team Leadership'],
+    'bio':
+        'Passionate about driving innovation and leading cross-functional teams to develop cutting-edge solutions. 8+ years of experience in product development and strategic planning.',
+    'expertise': [
+      'Strategic Planning',
+      'Agile Development',
+      'Digital Transformation',
+      'Team Leadership',
+    ],
     'stats': {
       'ideas': 14,
       'contributions': 27,
@@ -32,7 +38,8 @@ class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
     'recentActivity': [
       {
         'type': 'comment',
-        'content': 'Great idea! I think we should consider implementing this in Q3.',
+        'content':
+            'Great idea! I think we should consider implementing this in Q3.',
         'target': 'AI-Powered Customer Support',
         'time': '2 days ago',
       },
@@ -58,7 +65,8 @@ class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
     'achievements': [
       {
         'title': 'Innovation Champion',
-        'description': 'Awarded for leading 5+ successful innovation initiatives',
+        'description':
+            'Awarded for leading 5+ successful innovation initiatives',
         'icon': Icons.emoji_events,
         'date': 'June 2024',
       },
@@ -115,74 +123,77 @@ class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
       backgroundColor: Color(0xFFF8F9FA),
       body: SafeArea(
         child: NestedScrollView(
-          headerSliverBuilder: (context, innerBoxIsScrolled) => [
-            SliverAppBar(
-              expandedHeight: 280,
-              floating: false,
-              pinned: true,
-              backgroundColor: Colors.white,
-              elevation: 0,
-              // Move Tools button to leading position
-              leading: IconButton(
-                icon: Icon(Icons.build_outlined),
-                tooltip: 'Tools Overview',
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ToolsOverviewPage(),
+          headerSliverBuilder:
+              (context, innerBoxIsScrolled) => [
+                SliverAppBar(
+                  expandedHeight: 290,
+                  floating: false,
+                  pinned: true,
+                  backgroundColor: Colors.white,
+                  elevation: 0,
+                  // Move Tools button to leading position
+                  leading: IconButton(
+                    icon: Icon(Icons.build_outlined),
+                    tooltip: 'Tools Overview',
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ToolsOverviewPage(),
+                        ),
+                      );
+                    },
+                  ),
+                  actions: [
+                    IconButton(
+                      icon: Icon(_isEditing ? Icons.check : Icons.edit),
+                      onPressed: () {
+                        setState(() {
+                          _isEditing = !_isEditing;
+                          if (!_isEditing) {
+                            // Save changes logic would go here
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Profile updated successfully'),
+                                behavior: SnackBarBehavior.floating,
+                              ),
+                            );
+                          }
+                        });
+                      },
                     ),
-                  );
-                },
-              ),
-              actions: [
-                IconButton(
-                  icon: Icon(_isEditing ? Icons.check : Icons.edit),
-                  onPressed: () {
-                    setState(() {
-                      _isEditing = !_isEditing;
-                      if (!_isEditing) {
-                        // Save changes logic would go here
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Profile updated successfully'),
-                            behavior: SnackBarBehavior.floating,
-                          ),
-                        );
-                      }
-                    });
-                  },
-                ),
-                IconButton(
-                  icon: Icon(Icons.settings_outlined),
-                  onPressed: () {
-                    // Navigate to settings
-                  },
+                    IconButton(
+                      icon: Icon(Icons.settings_outlined),
+                      onPressed: () {
+                        // Navigate to settings
+                      },
+                    ),
+                  ],
+                  flexibleSpace: FlexibleSpaceBar(
+                    background: _buildProfileHeader(),
+                  ),
+                  bottom: TabBar(
+                    controller: _tabController,
+                    labelColor: Colors.blue.shade700,
+                    unselectedLabelColor: Colors.grey.shade600,
+                    indicatorColor: Colors.blue.shade700,
+                    indicatorWeight: 3,
+                    tabs: [
+                      Tab(text: 'Overview'),
+                      Tab(text: 'Activity'),
+                      Tab(text: 'Saved'),
+                    ],
+                  ),
                 ),
               ],
-              flexibleSpace: FlexibleSpaceBar(
-                background: _buildProfileHeader(),
-              ),
-              bottom: TabBar(
-                controller: _tabController,
-                labelColor: Colors.blue.shade700,
-                unselectedLabelColor: Colors.grey.shade600,
-                indicatorColor: Colors.blue.shade700,
-                indicatorWeight: 3,
-                tabs: [
-                  Tab(text: 'Overview'),
-                  Tab(text: 'Activity'),
-                  Tab(text: 'Saved'),
-                ],
-              ),
-            ),
-          ],
           // Fixed bottom overflow by using a constrained height content container
           body: Container(
             // Constrain the height to prevent overflow
-            height: MediaQuery.of(context).size.height - 
-                   MediaQuery.of(context).padding.top - 
-                   kToolbarHeight - 50, // Account for TabBar height
+            height:
+                MediaQuery.of(context).size.height -
+                MediaQuery.of(context).padding.top -
+                kToolbarHeight -
+                50, // Account for TabBar height
             child: TabBarView(
               controller: _tabController,
               children: [
@@ -206,9 +217,12 @@ class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
           SizedBox(height: 20),
           // Profile image
           GestureDetector(
-            onTap: _isEditing ? () {
-              // Photo selection logic
-            } : null,
+            onTap:
+                _isEditing
+                    ? () {
+                      // Photo selection logic
+                    }
+                    : null,
             child: Stack(
               children: [
                 Hero(
@@ -236,19 +250,24 @@ class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
             ),
           ),
           SizedBox(height: 16),
-          
+
           // Name and role
-          _isEditing 
-            ? Padding(
+          _isEditing
+              ? Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 40),
                 child: Column(
                   children: [
                     TextField(
-                      controller: TextEditingController(text: _userData['name']),
+                      controller: TextEditingController(
+                        text: _userData['name'],
+                      ),
                       decoration: InputDecoration(
                         labelText: 'Name',
                         isDense: true,
-                        contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                        contentPadding: EdgeInsets.symmetric(
+                          vertical: 8,
+                          horizontal: 12,
+                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -261,11 +280,16 @@ class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
                     ),
                     SizedBox(height: 8),
                     TextField(
-                      controller: TextEditingController(text: _userData['role']),
+                      controller: TextEditingController(
+                        text: _userData['role'],
+                      ),
                       decoration: InputDecoration(
                         labelText: 'Title',
                         isDense: true,
-                        contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                        contentPadding: EdgeInsets.symmetric(
+                          vertical: 8,
+                          horizontal: 12,
+                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -279,50 +303,41 @@ class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
                   ],
                 ),
               )
-            : Column(
+              : Column(
                 children: [
                   Text(
                     _userData['name'],
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 4),
                   Text(
                     _userData['role'],
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey.shade700,
-                    ),
+                    style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
                   ),
                 ],
               ),
-          
+
           SizedBox(height: 20),
-          
+
           // Stats row
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              _buildStatItem(_userData['stats']['ideas'].toString(), 'Ideas'),
+              _buildStatDivider(),
               _buildStatItem(
-                _userData['stats']['ideas'].toString(), 
-                'Ideas'
+                _userData['stats']['contributions'].toString(),
+                'Contributions',
               ),
               _buildStatDivider(),
               _buildStatItem(
-                _userData['stats']['contributions'].toString(), 
-                'Contributions'
+                _userData['stats']['implementations'].toString(),
+                'Implemented',
               ),
               _buildStatDivider(),
               _buildStatItem(
-                _userData['stats']['implementations'].toString(), 
-                'Implemented'
-              ),
-              _buildStatDivider(),
-              _buildStatItem(
-                _userData['stats']['followers'].toString(), 
-                'Followers'
+                _userData['stats']['followers'].toString(),
+                'Followers',
               ),
             ],
           ),
@@ -348,10 +363,7 @@ class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
           SizedBox(height: 2),
           Text(
             label,
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey.shade600,
-            ),
+            style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
           ),
         ],
       ),
@@ -359,11 +371,7 @@ class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
   }
 
   Widget _buildStatDivider() {
-    return Container(
-      height: 24,
-      width: 1,
-      color: Colors.grey.shade300,
-    );
+    return Container(height: 24, width: 1, color: Colors.grey.shade300);
   }
 
   Widget _buildOverviewTab() {
@@ -375,42 +383,41 @@ class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
         _buildSectionCard(
           title: 'Contact Information',
           icon: Icons.contact_mail_outlined,
-          child: _isEditing 
-            ? _buildEditableContactInfo()
-            : _buildContactInfo(),
+          child: _isEditing ? _buildEditableContactInfo() : _buildContactInfo(),
         ),
-        
+
         SizedBox(height: 16),
-        
+
         // Bio section
         _buildSectionCard(
           title: 'About',
           icon: Icons.person_outline,
-          child: _isEditing
-            ? TextField(
-                controller: TextEditingController(text: _userData['bio']),
-                maxLines: 3,
-                decoration: InputDecoration(
-                  hintText: 'Tell us about yourself...',
-                  isDense: true,
-                  contentPadding: EdgeInsets.all(12),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
+          child:
+              _isEditing
+                  ? TextField(
+                    controller: TextEditingController(text: _userData['bio']),
+                    maxLines: 3,
+                    decoration: InputDecoration(
+                      hintText: 'Tell us about yourself...',
+                      isDense: true,
+                      contentPadding: EdgeInsets.all(12),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  )
+                  : Text(
+                    _userData['bio'],
+                    style: TextStyle(
+                      fontSize: 14,
+                      height: 1.5,
+                      color: Colors.black87,
+                    ),
                   ),
-                ),
-              )
-            : Text(
-                _userData['bio'],
-                style: TextStyle(
-                  fontSize: 14,
-                  height: 1.5,
-                  color: Colors.black87,
-                ),
-              ),
         ),
-        
+
         SizedBox(height: 16),
-        
+
         // Areas of expertise
         _buildSectionCard(
           title: 'Areas of Expertise',
@@ -418,88 +425,101 @@ class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
           child: Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: _isEditing
-              ? [
-                  ..._userData['expertise'].map<Widget>((expertise) => _buildExpertiseChip(expertise, true)).toList(),
-                  ActionChip(
-                    avatar: Icon(Icons.add, size: 16, color: Colors.blue),
-                    label: Text('Add'),
-                    onPressed: () {
-                      // Show dialog to add expertise
-                    },
-                  ),
-                ]
-              : _userData['expertise'].map<Widget>((expertise) => _buildExpertiseChip(expertise, false)).toList(),
+            children:
+                _isEditing
+                    ? [
+                      ..._userData['expertise']
+                          .map<Widget>(
+                            (expertise) => _buildExpertiseChip(expertise, true),
+                          )
+                          .toList(),
+                      ActionChip(
+                        avatar: Icon(Icons.add, size: 16, color: Colors.blue),
+                        label: Text('Add'),
+                        onPressed: () {
+                          // Show dialog to add expertise
+                        },
+                      ),
+                    ]
+                    : _userData['expertise']
+                        .map<Widget>(
+                          (expertise) => _buildExpertiseChip(expertise, false),
+                        )
+                        .toList(),
           ),
         ),
-        
+
         SizedBox(height: 16),
-        
+
         // Achievements section
         _buildSectionCard(
           title: 'Achievements',
           icon: Icons.emoji_events_outlined,
           child: Column(
-            children: _userData['achievements'].map<Widget>((achievement) {
-              return Padding(
-                padding: EdgeInsets.only(
-                  bottom: achievement == _userData['achievements'].last ? 0 : 16
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.amber.shade100,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Icon(
-                        achievement['icon'] as IconData,
-                        color: Colors.amber.shade800,
-                        size: 24,
-                      ),
+            children:
+                _userData['achievements'].map<Widget>((achievement) {
+                  return Padding(
+                    padding: EdgeInsets.only(
+                      bottom:
+                          achievement == _userData['achievements'].last
+                              ? 0
+                              : 16,
                     ),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          padding: EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.amber.shade100,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(
+                            achievement['icon'] as IconData,
+                            color: Colors.amber.shade800,
+                            size: 24,
+                          ),
+                        ),
+                        SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Expanded(
-                                child: Text(
-                                  achievement['title'],
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      achievement['title'],
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
                                   ),
-                                ),
+                                  Text(
+                                    achievement['date'],
+                                    style: TextStyle(
+                                      color: Colors.grey.shade600,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
                               ),
+                              SizedBox(height: 4),
                               Text(
-                                achievement['date'],
+                                achievement['description'],
                                 style: TextStyle(
-                                  color: Colors.grey.shade600,
-                                  fontSize: 12,
+                                  color: Colors.grey.shade700,
+                                  fontSize: 14,
                                 ),
                               ),
                             ],
                           ),
-                          SizedBox(height: 4),
-                          Text(
-                            achievement['description'],
-                            style: TextStyle(
-                              color: Colors.grey.shade700,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              );
-            }).toList(),
+                  );
+                }).toList(),
           ),
         ),
       ],
@@ -516,9 +536,7 @@ class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
             prefixIcon: Icon(Icons.email_outlined),
             isDense: true,
             contentPadding: EdgeInsets.symmetric(vertical: 12),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
           ),
         ),
         SizedBox(height: 12),
@@ -529,9 +547,7 @@ class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
             prefixIcon: Icon(Icons.phone_outlined),
             isDense: true,
             contentPadding: EdgeInsets.symmetric(vertical: 12),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
           ),
         ),
         SizedBox(height: 12),
@@ -542,9 +558,7 @@ class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
             prefixIcon: Icon(Icons.business_outlined),
             isDense: true,
             contentPadding: EdgeInsets.symmetric(vertical: 12),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
           ),
         ),
         SizedBox(height: 12),
@@ -555,9 +569,7 @@ class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
             prefixIcon: Icon(Icons.location_on_outlined),
             isDense: true,
             contentPadding: EdgeInsets.symmetric(vertical: 12),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
           ),
         ),
       ],
@@ -571,17 +583,11 @@ class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
           leading: Icon(Icons.email_outlined, color: Colors.blue.shade700),
           title: Text(
             'Email',
-            style: TextStyle(
-              fontSize: 13,
-              color: Colors.grey.shade600,
-            ),
+            style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
           ),
           subtitle: Text(
             _userData['email'],
-            style: TextStyle(
-              fontSize: 15,
-              color: Colors.black87,
-            ),
+            style: TextStyle(fontSize: 15, color: Colors.black87),
           ),
           contentPadding: EdgeInsets.zero,
           dense: true,
@@ -591,17 +597,11 @@ class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
           leading: Icon(Icons.phone_outlined, color: Colors.blue.shade700),
           title: Text(
             'Phone',
-            style: TextStyle(
-              fontSize: 13,
-              color: Colors.grey.shade600,
-            ),
+            style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
           ),
           subtitle: Text(
             _userData['phone'],
-            style: TextStyle(
-              fontSize: 15,
-              color: Colors.black87,
-            ),
+            style: TextStyle(fontSize: 15, color: Colors.black87),
           ),
           contentPadding: EdgeInsets.zero,
           dense: true,
@@ -611,37 +611,28 @@ class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
           leading: Icon(Icons.business_outlined, color: Colors.blue.shade700),
           title: Text(
             'Department',
-            style: TextStyle(
-              fontSize: 13,
-              color: Colors.grey.shade600,
-            ),
+            style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
           ),
           subtitle: Text(
             _userData['department'],
-            style: TextStyle(
-              fontSize: 15,
-              color: Colors.black87,
-            ),
+            style: TextStyle(fontSize: 15, color: Colors.black87),
           ),
           contentPadding: EdgeInsets.zero,
           dense: true,
         ),
         Divider(),
         ListTile(
-          leading: Icon(Icons.location_on_outlined, color: Colors.blue.shade700),
+          leading: Icon(
+            Icons.location_on_outlined,
+            color: Colors.blue.shade700,
+          ),
           title: Text(
             'Location',
-            style: TextStyle(
-              fontSize: 13,
-              color: Colors.grey.shade600,
-            ),
+            style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
           ),
           subtitle: Text(
             _userData['location'],
-            style: TextStyle(
-              fontSize: 15,
-              color: Colors.black87,
-            ),
+            style: TextStyle(fontSize: 15, color: Colors.black87),
           ),
           contentPadding: EdgeInsets.zero,
           dense: true,
@@ -654,17 +645,17 @@ class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
     return Chip(
       label: Text(
         expertise,
-        style: TextStyle(
-          fontSize: 13,
-          color: Colors.blue.shade800,
-        ),
+        style: TextStyle(fontSize: 13, color: Colors.blue.shade800),
       ),
       backgroundColor: Colors.blue.shade50,
       padding: EdgeInsets.symmetric(horizontal: 4),
       deleteIcon: removable ? Icon(Icons.close, size: 16) : null,
-      onDeleted: removable ? () {
-        // Remove expertise logic
-      } : null,
+      onDeleted:
+          removable
+              ? () {
+                // Remove expertise logic
+              }
+              : null,
     );
   }
 
@@ -675,10 +666,10 @@ class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
       itemCount: _userData['recentActivity'].length,
       itemBuilder: (context, index) {
         final activity = _userData['recentActivity'][index];
-        
+
         IconData activityIcon;
         Color iconColor;
-        
+
         switch (activity['type']) {
           case 'idea':
             activityIcon = Icons.lightbulb_outline;
@@ -696,10 +687,10 @@ class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
             activityIcon = Icons.star_outline;
             iconColor = Colors.grey.shade700;
         }
-        
+
         return Container(
           margin: EdgeInsets.only(
-            bottom: index == _userData['recentActivity'].length - 1 ? 0 : 16
+            bottom: index == _userData['recentActivity'].length - 1 ? 0 : 16,
           ),
           decoration: BoxDecoration(
             color: Colors.white,
@@ -727,11 +718,7 @@ class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
                         color: iconColor.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Icon(
-                        activityIcon,
-                        color: iconColor,
-                        size: 20,
-                      ),
+                      child: Icon(activityIcon, color: iconColor, size: 20),
                     ),
                     SizedBox(width: 12),
                     Expanded(
@@ -742,7 +729,8 @@ class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                activity['type'].substring(0, 1).toUpperCase() + activity['type'].substring(1),
+                                activity['type'].substring(0, 1).toUpperCase() +
+                                    activity['type'].substring(1),
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
@@ -829,10 +817,10 @@ class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
       itemCount: _userData['savedIdeas'].length,
       itemBuilder: (context, index) {
         final idea = _userData['savedIdeas'][index];
-        
+
         return Container(
           margin: EdgeInsets.only(
-            bottom: index == _userData['savedIdeas'].length - 1 ? 0 : 16
+            bottom: index == _userData['savedIdeas'].length - 1 ? 0 : 16,
           ),
           decoration: BoxDecoration(
             color: Colors.white,
@@ -850,10 +838,7 @@ class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
             contentPadding: EdgeInsets.all(16),
             title: Text(
               idea['title'],
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -861,7 +846,11 @@ class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
                 SizedBox(height: 4),
                 Row(
                   children: [
-                    Icon(Icons.person_outline, size: 14, color: Colors.grey.shade600),
+                    Icon(
+                      Icons.person_outline,
+                      size: 14,
+                      color: Colors.grey.shade600,
+                    ),
                     SizedBox(width: 4),
                     Text(
                       idea['creator'],
@@ -871,7 +860,11 @@ class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
                       ),
                     ),
                     SizedBox(width: 12),
-                    Icon(Icons.calendar_today_outlined, size: 14, color: Colors.grey.shade600),
+                    Icon(
+                      Icons.calendar_today_outlined,
+                      size: 14,
+                      color: Colors.grey.shade600,
+                    ),
                     SizedBox(width: 4),
                     Text(
                       idea['date'],
@@ -946,11 +939,7 @@ class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
           children: [
             Row(
               children: [
-                Icon(
-                  icon,
-                  size: 20,
-                  color: Colors.blue.shade700,
-                ),
+                Icon(icon, size: 20, color: Colors.blue.shade700),
                 SizedBox(width: 8),
                 Text(
                   title,

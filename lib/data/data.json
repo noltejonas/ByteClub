@@ -38,8 +38,8 @@
       "name": "Unternehmen",
       "isActive": false,
       "children": {
-        "Orndungs-Momente": {
-          "name": "Orndungs-Momente",
+        "Ordnungs-Momente": {
+          "name": "Ordnungs-Momente",
           "isActive": false,
           "children": {
             "Governance": {
