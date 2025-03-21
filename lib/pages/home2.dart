@@ -26,7 +26,7 @@ class _Home2ScreenState extends State<Home2Screen> with SingleTickerProviderStat
   final ScrollController _chatScrollController = ScrollController();
   final List<Map<String, String>> _chatMessages = [];
 final gptService = GPTService(
-    apiKey: "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",
+    apiKey: "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",
     model: "gpt-4o",
   );  
   bool _isSendingMessage = false;
